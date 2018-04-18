@@ -1,7 +1,6 @@
 from random import seed
 from random import randrange
 import random
-from csv import reader
 import pydot
 MAX_VAL = 999999999
 
@@ -79,10 +78,8 @@ class DecisionTree():
 
         for orientation in group:
             if len(set(group[orientation]['y'])) == 1:
-                print("already 1 class")
                 node[orientation] = self._to_leaf(group[orientation]['y'])
             elif len(group[orientation]['y']) <= self.min_size:
-                print("min size reqched")
                 node[orientation] = self._to_leaf(group[orientation]['y'])
             else:
                 node[orientation] = self._get_split(
@@ -147,7 +144,7 @@ class DecisionTree():
         graph.write_png(filename)
 
 
-class RandomForest():
+class RandomForestClassifier():
 
     def __init__(self, max_depth, min_size, sample_ratio, n_trees, n_features):
         self.trees = list()

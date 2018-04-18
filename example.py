@@ -1,5 +1,6 @@
-from RandomForest import RandomForest, DecisionTree
+from RandomForest import RandomForestClassifier, DecisionTree
 from csv import reader
+
 ########### EXAMPLE USAGE ############################
 label_map = {'Iris-setosa':0, 'Iris-versicolor':1, 'Iris-virginica':2}
 
@@ -19,7 +20,8 @@ def load_csv(filename):
         return dataset
 
 dataset = load_csv('iris.csv')
-#print(dataset)
+
+
 import random
 random.shuffle(dataset)
 X = [y[0:4] for y in dataset]
@@ -42,12 +44,12 @@ def accuracy_metric(actual, predicted):
             correct += 1
     return correct / float(len(actual)) * 100.0
 
-dt = RandomForest(max_depth=1, min_size=1, n_features=5, n_trees=10, sample_ratio=0.8)
+dt = RandomForestClassifier(max_depth=None, min_size=1, n_features=None, n_trees=100, sample_ratio=0.8)
 #dt = DecisionTree(max_depth=None, min_size=1)
 dt.fit(X_train, y_train)
 #dt.visualize('example.png')
 predicted = [dt.predict(x) for x in X_test]
 
-print("actual :", y_test)
-print("predicted :", predicted)
-print(accuracy_metric(y_test, predicted))
+print("actual:", y_test)
+print("predicted:", predicted)
+print("accuracy:", accuracy_metric(y_test, predicted))
