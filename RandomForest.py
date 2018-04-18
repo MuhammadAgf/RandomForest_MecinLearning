@@ -1,5 +1,6 @@
 from random import seed
 from random import randrange
+import random
 from csv import reader
 import pydot
 MAX_VAL = 999999999
@@ -159,7 +160,7 @@ class RandomForest():
     def rand_sample(self, X, Y):
         indexes = list(range(len(Y)))
         n_sample = round(len(Y) * self.sample_ratio)
-        if n_sample == len(y):
+        if n_sample == len(Y):
             return X, Y
         sample_index = random.sample(indexes, n_sample)
         X_sample, Y_sample = list(), list()
@@ -183,52 +184,3 @@ class RandomForest():
         predictions = [tree.predict(x) for tree in self.trees]
         return max(set(predictions), key=predictions.count)
 
-
-
-########### EXAMPLE USAGE ############################
-
-def load_csv(filename):
-    dataset = list()
-    with open(filename, 'r') as file:
-        csv_reader = reader(file)
-        for row in csv_reader:
-            if not row:
-                continue
-            temp = [float(r) for r in row]
-            dataset.append(temp)
-        return dataset
-
-dataset = load_csv('sample_data.csv')
-
-
-import random
-random.shuffle(dataset)
-X = [y[0:4] for y in dataset]
-y = [y[-1] for y in dataset]
-offset = int(len(y) * 0.2)
-y_train = y[offset:]
-X_train = X[offset:]
-y_test = y[:offset]
-X_test = X[:offset]
-print(len(X_test))
-
-max_depth = 10
-min_size = 1
-sample_size = 1.0
-
-def accuracy_metric(actual, predicted):
-    correct = 0
-    for i in range(len(actual)):
-        if actual[i] == predicted[i]:
-            correct += 1
-    return correct / float(len(actual)) * 100.0
-
-# dt = RandomForest(max_depth=1, min_size=1, n_features=5, n_trees=10, sample_ratio=0.8)
-dt = DecisionTree(max_depth=None, min_size=1)
-dt.fit(X_train, y_train)
-dt.visualize('example.png')
-predicted = [dt.predict(x) for x in X_test]
-
-print("actual :", y_test)
-print("predicted :", predicted)
-print(accuracy_metric(y_test, predicted))
