@@ -1,7 +1,9 @@
 from random import seed
 from random import randrange
+from joblib import Parallel, delayed
 import random
 import pydot
+
 MAX_VAL = 999999999
 
 
@@ -146,13 +148,30 @@ class DecisionTree():
 
 class RandomForestClassifier():
 
-    def __init__(self, max_depth, min_size, sample_ratio, n_trees, n_features):
+    def __init__(self, max_depth, min_size, sample_ratio, n_trees, n_features, n_jobs=None):
         self.trees = list()
         self.max_depth = max_depth
         self.min_size = min_size
         self.sample_ratio = sample_ratio
         self.n_trees = n_trees
         self.n_features = n_features
+        self.n_jobs = n_jobs
+
+    def _paralel_fit(self, X, Y):
+        if(self.n_jobs is None):
+            self.n_jobs = -1
+
+        self.trees = Parallel(n_jobs=self.n_jobs, backend="threading")(delayed(self._single_fit)(X,Y) for i in range(self.n_trees))
+
+    def _single_fit(self, X, Y):
+        X_sample, Y_sample = self.rand_sample(X, Y)
+        dt = DecisionTree(
+            max_depth=self.max_depth,
+            min_size=self.min_size,
+            n_features=self.n_features
+        )
+        dt.fit(X_sample, Y_sample)
+        return dt
 
     def rand_sample(self, X, Y):
         indexes = list(range(len(Y)))
@@ -167,17 +186,8 @@ class RandomForestClassifier():
         return X_sample, Y_sample
 
     def fit(self, X, Y):
-        for i in range(self.n_trees):
-            X_sample, Y_sample = self.rand_sample(X, Y)
-            dt = DecisionTree(
-                max_depth=self.max_depth,
-                min_size=self.min_size,
-                n_features=self.n_features
-            )
-            dt.fit(X_sample, Y_sample)
-            self.trees.append(dt)
+        self._paralel_fit(X, Y)
 
     def predict(self, x):
         predictions = [tree.predict(x) for tree in self.trees]
         return max(set(predictions), key=predictions.count)
-
