@@ -61,6 +61,7 @@ class DecisionTree():
         return max(set(target), key=target.count)
 
     def _split(self, node, depth):
+        print(depth)
         group = node['groups']
         del(node['groups'])
 
@@ -125,7 +126,9 @@ class RandomForestClassifier():
         return X_sample, Y_sample
 
     def fit(self, X, Y):
+        print("start training")
         for i in range(self.n_trees):
+            print( "Training DT {}".format(str(i+1)) )
             X_sample, Y_sample = self.rand_sample(X, Y)
             dt = DecisionTree(
                 max_depth=self.max_depth,
