@@ -1,5 +1,6 @@
 from RandomForest import RandomForestClassifier, DecisionTree
 from csv import reader
+#from visualizer import visualize
 
 ########### EXAMPLE USAGE ############################
 label_map = {'Iris-setosa':0, 'Iris-versicolor':1, 'Iris-virginica':2}
@@ -44,11 +45,15 @@ def accuracy_metric(actual, predicted):
             correct += 1
     return correct / float(len(actual)) * 100.0
 
-dt = RandomForestClassifier(max_depth=None, min_size=1, n_features=None, n_trees=100, sample_ratio=0.8)
-#dt = DecisionTree(max_depth=None, min_size=1)
-dt.fit(X_train, y_train)
-#dt.visualize('example.png')
-predicted = [dt.predict(x) for x in X_test]
+#clf = RandomForestClassifier(max_depth=None, min_size=1, n_features=None, n_trees=100, sample_ratio=0.8)
+#clf = RandomForestClassifier()
+#clf.fit(X_train, y_train)
+clf = DecisionTree()
+clf.fit(X_train, y_train)
+from pprint import pprint
+pprint(clf.root)
+#visualize(clf,'contoh.png')
+predicted = [clf.predict(x) for x in X_test]
 
 print("actual:", y_test)
 print("predicted:", predicted)

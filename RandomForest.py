@@ -1,13 +1,16 @@
 from random import seed
 from random import randrange
 import random
-import pydot
 MAX_VAL = 999999999
+
+# Muhammad - 1506735641 - A
+# Nur Intan - 1506689093  - A
+# Ahmad Elang - 1506689105 - A
 
 
 class DecisionTree():
 
-    def __init__(self, max_depth=None, min_size=10, n_features=None):
+    def __init__(self, max_depth=None, min_size=1, n_features=None):
         self.root = None
         self.max_depth = max_depth
         self.min_size = min_size
@@ -40,14 +43,10 @@ class DecisionTree():
         return gini
 
     def _get_split(self, X, Y):
-        class_values = list(set(y for y in Y))
+        class_values = list(set(Y))
         b_index, b_value, b_score, b_groups = MAX_VAL, MAX_VAL, MAX_VAL, None
 
-        features = list()
-        while len(features) < self.n_features:
-            index = randrange(len(X[0]))
-            if index not in features:
-                features.append(index)
+        features = random.sample( range(len(X[0])) , self.n_features)
 
         for index in features:
             for row in X:
@@ -101,52 +100,11 @@ class DecisionTree():
                 node = node['right']
         return node
 
-    def _get_label(self, node, orientation=None):
-        meaning = {'left': '<', 'right': '>='}
-        label = 'id: {}\nindex: {}'.format(
-            str(id(node)),
-            node['index']
-        )
-        if orientation:
-            if isinstance(node[orientation], dict):
-                label = '{} {}\nid: {}\nindex: {}'.format(
-                    meaning[orientation],
-                    node['value'],
-                    str(id(node[orientation])),
-                    node[orientation]['index']
-                )
-            else:
-                label = '{} {}\nid: {}\nPREDICT: {}'.format(
-                    meaning[orientation],
-                    node['value'],
-                    str(id(node[orientation])),
-                    node[orientation]
-                )
-        return label
-
-    def _draw(self, graph, parent_label, node):
-        if not isinstance(node, dict):
-            return
-        left_label = self._get_label(node, 'left')
-        right_label = self._get_label(node, 'right')
-
-        left_edge = pydot.Edge(parent_label, left_label)
-        graph.add_edge(left_edge)
-        right_edge = pydot.Edge(parent_label, right_label)
-        graph.add_edge(right_edge)
-        self._draw(graph, left_label, node['left'])
-        self._draw(graph, right_label, node['right'])
-
-    def visualize(self, filename):
-        graph = pydot.Dot(graph_type='graph')
-        root_label = self._get_label(self.root)
-        self._draw(graph, root_label, self.root)
-        graph.write_png(filename)
 
 
 class RandomForestClassifier():
 
-    def __init__(self, max_depth, min_size, sample_ratio, n_trees, n_features):
+    def __init__(self, max_depth=None, min_size=1, sample_ratio=1.0, n_trees=10, n_features=None):
         self.trees = list()
         self.max_depth = max_depth
         self.min_size = min_size
