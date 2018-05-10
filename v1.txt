@@ -1,0 +1,63 @@
+start training
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+training...
+done training
+<RandomForest.DecisionTree object at 0x7ff1b7b551d0>
+<RandomForest.DecisionTree object at 0x7ff1b7b55208>
+<RandomForest.DecisionTree object at 0x7ff1b7b552b0>
+<RandomForest.DecisionTree object at 0x7ff1b7b55278>
+<RandomForest.DecisionTree object at 0x7ff1b7b55400>
+<RandomForest.DecisionTree object at 0x7ff1b7b55518>
+<RandomForest.DecisionTree object at 0x7ff1b7b55630>
+<RandomForest.DecisionTree object at 0x7ff1b7b55748>
+<RandomForest.DecisionTree object at 0x7ff1b7b55860>
+<RandomForest.DecisionTree object at 0x7ff1b7b55978>
+<RandomForest.DecisionTree object at 0x7ff1b7b55a90>
+SKLEARN:
+TP: 6233
+TN: 7159
+FP: 787
+FN: 821
+Accuracy: 0.8928
+F1 Score: 0.8857467670882478
+elapsed time: -0.8967761993408203
+Manual:
+TP: 552
+TN: 7909
+FP: 37
+FN: 6502
+Accuracy: 0.5640666666666667
+F1 Score: 0.14444589820751014
+elapsed time: -1981.2087786197662
+done drawing tree to tree_0.png
+done drawing tree to tree_1.png
+done drawing tree to tree_2.png
+done drawing tree to tree_3.png
+done drawing tree to tree_4.png
+done drawing tree to tree_5.png
+done drawing tree to tree_6.png
+done drawing tree to tree_7.png
+done drawing tree to tree_8.png
+done drawing tree to tree_9.png
+done drawing tree to tree_10.png
