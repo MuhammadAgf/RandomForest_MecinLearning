@@ -76,6 +76,8 @@ class DecisionTree():
     def _split(self, node, depth):
         group = node['groups']
         del(node['groups'])
+        if group is None:
+            return
 
         if len(group['right']['y']) == 0 or len(group['left']['y']) == 0:
             joined = group['left']['y'] + group['right']['y']
