@@ -27,7 +27,7 @@ np_y_test = np.array(y_test)
 
 import time
 manual_start = time.time()
-clf_manual = manualRF(n_trees=11, max_depth=11)
+clf_manual = manualRF(n_trees=11, max_depth=11, sample_ratio=0.8)
 clf_manual.fit(np_X_train, np_y_train)
 manual_end = manual_start - time.time()
 #clf_manual = joblib.load('trained_5_10')
@@ -41,7 +41,7 @@ sklearn_end = sklearn_start - time.time()
 sklearn_predicted = clf_sklearn.predict(np_X_test)
 manual_predicted = list()
 try:
-    joblib.dump(clf_manual, 'trained_10_10')
+    joblib.dump(clf_manual, 'trained_11_11_08')
 except Exception as e:
     print("gagal dump")
 for i in range(len(np_y_test)):
