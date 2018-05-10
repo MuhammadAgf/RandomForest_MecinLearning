@@ -68,10 +68,9 @@ class DecisionTree():
     def _to_leaf(self, target):
         return max(set(target), key=target.count)
 
-    def _get_split_thread(self, node, orientation, group, depth):
+    def _get_split_thread(self, node, orientation, group):
         node[orientation] = self._get_split(
             X=group[orientation]['X'], Y=group[orientation]['y'])
-        self._split(node[orientation], depth + 1)
 
     def _split(self, node, depth):
         group = node['groups']
@@ -99,12 +98,13 @@ class DecisionTree():
             else:
                 threads[orientation] = Thread(
                     target=self._get_split_thread,
-                    args=(node, orientation, group, depth)
+                    args=(node, orientation, group)
                 )
                 threads[orientation].start()
 
         for orientation in threads:
             threads[orientation].join()
+            self._split(node[orientation], depth + 1)
 
     def fit(self, X, Y):
         print("start training DT")
@@ -170,7 +170,6 @@ class RandomForestClassifier():
         print("done training")
         q.put('STOP')
         for tree in iter(q.get, 'STOP'):
-            print(tree)
             if tree != 'STOP':
                 self.trees.append(tree)
 
