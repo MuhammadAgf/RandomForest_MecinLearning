@@ -1,0 +1,51 @@
+0 HP_diff
+1 Attack_diff
+2 Defense_diff
+3 Sp. Atk_diff
+4 Sp. Def_diff
+5 Speed_diff
+6 stats_sum_diff
+7 First_win
+8 First_pokemon_Legendary
+9 Second_pokemon_Legendary
+start training
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+start training DT
+done training DT
+training...
+done training
+SKLEARN:
+TP: 6826
+TN: 7393
+FP: 465
+FN: 316
+Accuracy: 0.9479333333333333
+F1 Score: 0.9458878957943601
+elapsed time: 1.1341075897216797
+Manual:
+TP: 6820
+TN: 7326
+FP: 532
+FN: 322
+Accuracy: 0.9430666666666667
+F1 Score: 0.9410790672002208
+elapsed time: 4642.5819528102875
