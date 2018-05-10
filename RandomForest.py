@@ -2,19 +2,12 @@ from random import seed
 from random import randrange
 import random
 from multiprocessing import Process, Queue
+from threading import Thread
 MAX_VAL = 999999999
 
 # Muhammad - 1506735641 - A
 # Nur Intan - 1506689093  - A
 # Ahmad Elang - 1506689105 - A
-
-
-def multiprocessed(fun):
-    def wrapper(*args, **kwargs):
-        proc = Process(target=fun, args=args, kwargs=kwargs)
-        proc.start()
-        return proc
-    return wrapper
 
 
 class DecisionTree():
@@ -75,6 +68,11 @@ class DecisionTree():
     def _to_leaf(self, target):
         return max(set(target), key=target.count)
 
+    def _get_split_thread(self, node, orientation, group, depth):
+        node[orientation] = self._get_split(
+            X=group[orientation]['X'], Y=group[orientation]['y'])
+        self._split(node[orientation], depth + 1)
+
     def _split(self, node, depth):
         group = node['groups']
         del(node['groups'])
@@ -90,15 +88,21 @@ class DecisionTree():
                 node['right'] = self._to_leaf(group['right']['y'])
                 return
 
+        threads = {}
         for orientation in group:
             if len(set(group[orientation]['y'])) == 1:
                 node[orientation] = self._to_leaf(group[orientation]['y'])
             elif len(group[orientation]['y']) <= self.min_size:
                 node[orientation] = self._to_leaf(group[orientation]['y'])
             else:
-                node[orientation] = self._get_split(
-                    X=group[orientation]['X'], Y=group[orientation]['y'])
-                self._split(node[orientation], depth + 1)
+                threads[orientation] = Thread(
+                    target=self._get_split_thread,
+                    args=(node, orientation, group, depth)
+                )
+                threads[orientation].start()
+
+        for orientation in threads:
+            threads[orientation].join()
 
     def fit(self, X, Y):
         print("start training DT")
@@ -154,8 +158,6 @@ class RandomForestClassifier():
         q = Queue()
         processes = []
         print("start training")
-        import time
-        t = time.time()
         for i in range(self.n_trees):
             p = Process(target=self._fit_tree, args=(X, Y, q))
             p.start()
@@ -165,14 +167,14 @@ class RandomForestClassifier():
             proc.join()
         print("done training")
         q.put('STOP')
-        elapsed = time.time() - t
-        print("elapsed :", str(elapsed))
         for tree in iter(q.get, 'STOP'):
             print(tree)
             if tree != 'STOP':
                 self.trees.append(tree)
 
-
-    def predict(self, x):
+    def _predict_one(self, x):
         predictions = [tree.predict(x) for tree in self.trees]
         return max(set(predictions), key=predictions.count)
+
+    def predict(self, X):
+        return [self._predict_one(x) for x in X]
