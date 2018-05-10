@@ -25,13 +25,18 @@ np_y_train = np.array(y_train)
 np_X_test = np.array(X_test)
 np_y_test = np.array(y_test)
 
-
-# manual_start = time.time()
-clf_manual = manualRF(n_trees=10, max_depth=10)
+import time
+manual_start = time.time()
+clf_manual = manualRF(n_trees=11, max_depth=11)
 clf_manual.fit(np_X_train, np_y_train)
-clf_manual = joblib.load('trained_5_10')
-clf_sklearn = sklearnRF(n_estimators=10, max_depth=10).fit(np_X_train, np_y_train)
+manual_end = manual_start - time.time()
+#clf_manual = joblib.load('trained_5_10')
+
+sklearn_start = time.time()
+clf_sklearn = sklearnRF(n_estimators=11, max_depth=11).fit(np_X_train, np_y_train)
 clf_sklearn.fit(np_X_train, np_y_train)
+sklearn_end = sklearn_start - time.time()
+
 
 sklearn_predicted = clf_sklearn.predict(np_X_test)
 manual_predicted = list()
@@ -62,7 +67,7 @@ print("FP: {}".format(str(fp_sklearn)))
 print("FN: {}".format(str(fn_sklearn)))
 print("Accuracy: {}".format(acc_sklearn))
 print("F1 Score: {}".format(f1_score_sklearn))
-
+print("elapsed time: {}".format(str(sklearn_end)))
 
 print("Manual:")
 print("TP: {}".format(str(tp_manual)))
@@ -71,7 +76,7 @@ print("FP: {}".format(str(fp_manual)))
 print("FN: {}".format(str(fn_manual)))
 print("Accuracy: {}".format(acc_manual))
 print("F1 Score: {}".format(f1_score_manual))
-#print("elapsed time: {}".format(manual_elapsed))
+print("elapsed time: {}".format(manual_end))
 
 
 
