@@ -9,12 +9,12 @@ import joblib
 from sklearn.model_selection import train_test_split
 
 
-one_hot_encoded = pd.read_csv('combats_data.csv')
+one_hot_encoded = pd.read_csv('combatv2.csv')
 #print(one_hot_encoded.describe())
-# cols = [c for c in one_hot_encoded.columns if 'Type' not in c]
-# for i in range(len(cols)):
-#     print(str(i), cols[i])
-# one_hot_encoded = one_hot_encoded[cols]
+cols = [c for c in one_hot_encoded.columns if 'Type' not in c]
+for i in range(len(cols)):
+     print(str(i), cols[i])
+one_hot_encoded = one_hot_encoded[cols]
 X = one_hot_encoded.drop(['First_win'], axis=1)
 Y = one_hot_encoded['First_win']
 
@@ -27,26 +27,29 @@ np_y_test = np.array(y_test)
 
 import time
 manual_start = time.time()
-clf_manual = manualRF(n_trees=11, max_depth=11, sample_ratio=0.8)
+clf_manual = manualRF(n_trees=11, max_depth=20, sample_ratio=0.8)
 clf_manual.fit(np_X_train, np_y_train)
-manual_end = manual_start - time.time()
+manual_end = time.time() - manual_start
 #clf_manual = joblib.load('trained_5_10')
 
 sklearn_start = time.time()
-clf_sklearn = sklearnRF(n_estimators=11, max_depth=11).fit(np_X_train, np_y_train)
+clf_sklearn = sklearnRF(n_estimators=11, max_depth=20).fit(np_X_train, np_y_train)
 clf_sklearn.fit(np_X_train, np_y_train)
-sklearn_end = sklearn_start - time.time()
+sklearn_end = time.time() - sklearn_start
 
 
 sklearn_predicted = clf_sklearn.predict(np_X_test)
 manual_predicted = list()
 try:
-    joblib.dump(clf_manual, 'trained_11_11_08')
+#    pass
+    joblib.dump(clf_manual, 'last_11_20_0.8_v2')
 except Exception as e:
     print("gagal dump")
-for i in range(len(np_y_test)):
-    manual_predicted.append(clf_manual.predict(np_X_test[i]))
-manual_predicted = np.array(manual_predicted)
+
+#for i in range(len(np_y_test)):
+#    manual_predicted.append(clf_manual.predict(np_X_test[i]))
+
+manual_predicted = np.array(clf_manual.predict(np_X_test))
 
 from sklearn.metrics import confusion_matrix, f1_score
 from sklearn.metrics import accuracy_score
@@ -80,6 +83,6 @@ print("elapsed time: {}".format(manual_end))
 
 
 
-from visualizer import visualize
-for i in range(len(clf_manual.trees)):
-    visualize(clf_manual.trees[i],"tree_{}.png".format(str(i)))
+#from visualizer import visualize
+#for i in range(len(clf_manual.trees)):
+#    visualize(clf_manual.trees[i],"tree_{}.png".format(str(i)))
