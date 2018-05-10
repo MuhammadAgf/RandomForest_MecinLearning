@@ -1,11 +1,20 @@
 from random import seed
 from random import randrange
 import random
+from multiprocessing import Process, Queue
 MAX_VAL = 999999999
 
 # Muhammad - 1506735641 - A
 # Nur Intan - 1506689093  - A
 # Ahmad Elang - 1506689105 - A
+
+
+def multiprocessed(fun):
+    def wrapper(*args, **kwargs):
+        proc = Process(target=fun, args=args, kwargs=kwargs)
+        proc.start()
+        return proc
+    return wrapper
 
 
 class DecisionTree():
@@ -40,28 +49,33 @@ class DecisionTree():
                 if size > 0:
                     proportion = group['y'].count(class_value) / size
                     gini += (proportion * (1.0 - proportion))
+                else:
+                    gini += MAX_VAL
         return gini
 
     def _get_split(self, X, Y):
         class_values = list(set(Y))
         b_index, b_value, b_score, b_groups = MAX_VAL, MAX_VAL, MAX_VAL, None
-
-        features = random.sample( range(len(X[0])) , self.n_features)
-
+        features = random.sample(range(len(X[0])), self.n_features)
         for index in features:
+            seen = {}
+            seen.clear()
             for row in X:
-                groups = self._test_split(index, row[index], X, Y)
-                gini = self._gini_index(groups, class_values)
-                if gini < b_score:
-                    b_index, b_value, b_score, b_groups = \
-                        index, row[index], gini, groups
+                # SKIP YANG SUDAH PERNAH DILIAT
+                if not seen.get(row[index], False):
+                    seen.update({row[index]: True})
+                    groups = self._test_split(index, row[index], X, Y)
+                    gini = self._gini_index(groups, class_values)
+                    if gini < b_score:
+                        b_index, b_value, b_score, b_groups = \
+                            index, row[index], gini, groups
+
         return {'index': b_index, 'value': b_value, 'groups': b_groups}
 
     def _to_leaf(self, target):
         return max(set(target), key=target.count)
 
     def _split(self, node, depth):
-        print(depth)
         group = node['groups']
         del(node['groups'])
 
@@ -87,10 +101,12 @@ class DecisionTree():
                 self._split(node[orientation], depth + 1)
 
     def fit(self, X, Y):
+        print("start training DT")
         if self.n_features is None or len(X[0]) < self.n_features:
             self.n_features = len(X[0])
         self.root = self._get_split(X, Y)
         self._split(self.root, 0)
+        print("done training DT")
 
     def predict(self, row):
         node = self.root
@@ -100,7 +116,6 @@ class DecisionTree():
             else:
                 node = node['right']
         return node
-
 
 
 class RandomForestClassifier():
@@ -125,20 +140,39 @@ class RandomForestClassifier():
             Y_sample.append(Y[i])
         return X_sample, Y_sample
 
+    def _fit_tree(self, X, Y, q):
+        X_sample, Y_sample = self.rand_sample(X, Y)
+        dt = DecisionTree(
+            max_depth=self.max_depth,
+            min_size=self.min_size,
+            n_features=self.n_features
+        )
+        dt.fit(X_sample, Y_sample)
+        q.put(dt)
+
     def fit(self, X, Y):
+        q = Queue()
+        processes = []
         print("start training")
+        import time
+        t = time.time()
         for i in range(self.n_trees):
-            print( "Training DT {}".format(str(i+1)) )
-            X_sample, Y_sample = self.rand_sample(X, Y)
-            dt = DecisionTree(
-                max_depth=self.max_depth,
-                min_size=self.min_size,
-                n_features=self.n_features
-            )
-            dt.fit(X_sample, Y_sample)
-            self.trees.append(dt)
+            p = Process(target=self._fit_tree, args=(X, Y, q))
+            p.start()
+            processes.append(p)
+        print("training...")
+        for proc in processes:
+            proc.join()
+        print("done training")
+        q.put('STOP')
+        elapsed = time.time() - t
+        print("elapsed :", str(elapsed))
+        for tree in iter(q.get, 'STOP'):
+            print(tree)
+            if tree != 'STOP':
+                self.trees.append(tree)
+
 
     def predict(self, x):
         predictions = [tree.predict(x) for tree in self.trees]
         return max(set(predictions), key=predictions.count)
-
